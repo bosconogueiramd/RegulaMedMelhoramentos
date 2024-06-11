@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import { getUsers, deleteUser, getStepsContent } from '../services/api';
+import '../styles/admin.css'; // Importe o CSS específico com o caminho correto
 
 const Admin = () => {
   const [users, setUsers] = useState([]);

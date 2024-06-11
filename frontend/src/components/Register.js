@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
-import { registerUser } from '../services/api';
+import { registerUser, getUsers } from '../services/api';
+import '../styles/register.css'; // Importe o CSS específico
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,14 +15,39 @@ const Register = () => {
     email: '',
     password: '',
   });
+  const [emailExists, setEmailExists] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === 'crm' || name === 'matricula') {
+      if (!/^\d*$/.test(value)) return; // Only allow numbers
+    }
+
+    if (name === 'birthDate') {
+      const newValue = value.replace(/[^\d]/g, '').slice(0, 8); // Remove non-numeric characters and limit to 8 digits
+      let formattedValue = newValue;
+      if (newValue.length >= 5) {
+        formattedValue = `${newValue.slice(0, 2)}/${newValue.slice(2, 4)}/${newValue.slice(4)}`;
+      } else if (newValue.length >= 3) {
+        formattedValue = `${newValue.slice(0, 2)}/${newValue.slice(2)}`;
+      }
+      setFormData({
+        ...formData,
+        [name]: formattedValue,
+      });
+      return;
+    }
+
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+  };
+
+  const checkEmailExists = async (email) => {
+    const users = await getUsers();
+    return users.some(user => user.email === email);
   };
 
   const handleSubmit = async (e) => {
@@ -31,6 +57,14 @@ const Register = () => {
     if (isAdmin) {
       newUser.matricula = matricula;
     }
+
+    const emailAlreadyExists = await checkEmailExists(email);
+    if (emailAlreadyExists) {
+      setEmailExists(true);
+      return;
+    }
+
+    setEmailExists(false);
     const response = await registerUser(newUser);
     if (response.message === 'Usuário registrado com sucesso') {
       navigate('/'); // Redirecionar para a página de login
@@ -43,6 +77,7 @@ const Register = () => {
       <main className="container my-4">
         <div className="register-form">
           <h2>Cadastro de Usuário</h2>
+          {emailExists && <p className="text-danger">E-mail já registrado</p>}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="fullName">Nome Completo: </label>
