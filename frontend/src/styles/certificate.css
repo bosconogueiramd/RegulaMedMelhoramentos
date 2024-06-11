@@ -1,0 +1,25 @@
+.certificate {
+    border: 2px solid #000;
+    padding: 20px;
+    margin: 20px auto;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  
+  .certificate h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .certificate p {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .certificate footer {
+    margin-top: 20px;
+    font-size: 12px;
+  }
+  
